@@ -8,10 +8,13 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+
+import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 
 
 public class Controller {
@@ -57,6 +60,9 @@ public class Controller {
     private boolean isAuthorized;
     private boolean registration = false;
 
+    public Controller() throws IOException {
+    }
+
 
     public void setAuthorized(boolean isAuthorized) {
         this.isAuthorized = isAuthorized;
@@ -84,8 +90,12 @@ public class Controller {
     }
 
     Socket socket;
+    File file;
+    FileWriter fWriter;
+    FileReader fReader;
     DataInputStream in;
     DataOutputStream out;
+    List<String> content;
 
     final String IP_ADRESS = "localhost";
     final int PORT = 8189;
@@ -95,9 +105,13 @@ public class Controller {
     public void connect() {
         try {
             socket = new Socket(IP_ADRESS, PORT);
-
+            file = new File("src/Lesson_6/client/story.txt");
+            fWriter = new FileWriter(file,true);
+            fReader = new FileReader(file);
             in = new DataInputStream(socket.getInputStream());
             out = new DataOutputStream(socket.getOutputStream());
+            content = Files.readAllLines(Paths.get(file.getPath()), StandardCharsets.US_ASCII);
+
 
             Thread t1 = new Thread(new Runnable() {
                 @Override
@@ -119,10 +133,12 @@ public class Controller {
                                 );
                             }
                         }
+                        logPrinter(content);
 
                         while (true) {
                             String nick;
                             String str = in.readUTF();
+                            fWriter.write(str +"\n");
                             String[] nickGetter = str.split(": ");
                             nick = nickGetter[0];
                             if (str.equals("/serverclosed")) break;
@@ -145,11 +161,13 @@ public class Controller {
                                 );
                             }
                         }
+                        fWriter.flush();
 
                     } catch (IOException e) {
                         e.printStackTrace();
                     } finally {
                         try {
+                            fWriter.flush();
                             socket.close();
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -174,6 +192,24 @@ public class Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void logPrinter(List<String> content){
+        this.content = content;
+        String nick;
+        System.out.println(content.size());
+        content.removeIf(o -> o.startsWith("/"));
+
+        System.out.println(content.size());
+        System.out.println(content.size());
+        for (String s:content) {
+            String[] logMassages = s.split(": ");
+            nick = logMassages[0];
+            getMassage(s, nick);
+        }
+
+
+
     }
 
     public void sendMsg() {
@@ -210,6 +246,7 @@ public class Controller {
             HBox hBox = new HBox();
             Label label = new Label(str + "\n");
             hBox.getChildren().add(label);
+
 
         if(nick.equals(myNick)){
             hBox.setAlignment(Pos.TOP_RIGHT);

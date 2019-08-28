@@ -1,0 +1,30 @@
+/clientlist Batman 
+/serverClosed
+/clientlist Batman 
+Batman: sad
+Batman: sda
+Batman: asd
+Batman: dsa
+Batman: ds
+Batman: as
+Batman: d
+Batman: asd
+Batman: sda
+Batman: 
+/serverClosed
+/clientlist Batman 
+/serverClosed
+/clientlist Batman 
+Batman: sda
+Batman: asd
+Batman: sda
+Batman: asd
+Batman: asd
+Batman: asd
+/serverClosed
+/clientlist Batman Joker 
+/serverClosed
+/clientlist Batman 
+/clientlist Batman Joker 
+/clientlist Batman 
+/serverClosed
